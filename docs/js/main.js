@@ -309,7 +309,8 @@ function initTestimonialsSlider() {
 
     function goToSlide(index) {
         currentSlide = index;
-        slides[index].scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+        const slideWidth = slides[0].offsetWidth + 24;
+        track.scrollTo({ left: slideWidth * index, behavior: "smooth" });
         updateDots();
         resetAutoplay();
     }
