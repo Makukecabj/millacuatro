@@ -1,7 +1,4 @@
-download_photos.py
-requirements.txt
-abrir_chrome.bat
-descargar.bat
+scripts/
 fotos/
 fotos.rar
 assets/
