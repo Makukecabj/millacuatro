@@ -31,7 +31,6 @@ const IMAGES = [
     { file: "producto-22.jpg", cat: "bikini" },
     { file: "producto-23.jpg", cat: "activewear" },
     { file: "producto-24.jpg", cat: "bikini" },
-    { file: "producto-25.jpg", cat: "activewear" },
 ];
 
 const IG_IMAGES = [
