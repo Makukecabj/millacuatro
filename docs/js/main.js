@@ -341,7 +341,7 @@ function renderGallery(filter) {
 
         imageWrap.appendChild(img);
         imageWrap.appendChild(badge);
-        imageWrap.addEventListener("click", () => window.open(product.url, '_blank'));
+        imageWrap.addEventListener("click", () => openLightbox(product.image));
 
         // Contenido
         const content = document.createElement("div");
