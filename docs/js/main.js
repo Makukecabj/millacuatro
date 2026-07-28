@@ -1,46 +1,174 @@
 /* ========================================
    MillaCuatro - Main JS
-   Gallery, animations, interactions
+   Gallery, animations, interactions, cart
    ======================================== */
 
 // ==========================================
-// Config: imagenes de productos
+// Catálogo MillaCuatro
 // ==========================================
-const IMAGES = [
-    { file: "producto-01.jpg", cat: "activewear" },
-    { file: "producto-02.jpg", cat: "bikini" },
-    { file: "producto-03.jpg", cat: "activewear" },
-    { file: "producto-04.jpg", cat: "bikini" },
-    { file: "producto-05.jpg", cat: "activewear" },
-    { file: "producto-06.jpg", cat: "bikini" },
-    { file: "producto-07.jpg", cat: "activewear" },
-    { file: "producto-08.jpg", cat: "bikini" },
-    { file: "producto-09.jpg", cat: "activewear" },
-    { file: "producto-10.jpg", cat: "bikini" },
-    { file: "producto-11.jpg", cat: "activewear" },
-    { file: "producto-12.jpg", cat: "bikini" },
-    { file: "producto-13.jpg", cat: "activewear" },
-    { file: "producto-14.jpg", cat: "bikini" },
-    { file: "producto-15.jpg", cat: "activewear" },
-    { file: "producto-16.jpg", cat: "bikini" },
-    { file: "producto-17.jpg", cat: "activewear" },
-    { file: "producto-18.jpg", cat: "bikini" },
-    { file: "producto-19.jpg", cat: "activewear" },
-    { file: "producto-20.jpg", cat: "bikini" },
-    { file: "producto-21.jpg", cat: "activewear" },
-    { file: "producto-22.jpg", cat: "bikini" },
-    { file: "producto-23.jpg", cat: "activewear" },
-    { file: "producto-24.jpg", cat: "bikini" },
-];
+// Los productos se cargan desde products.js
 
-const IG_IMAGES = [
-    "producto-01.jpg",
-    "producto-05.jpg",
-    "producto-10.jpg",
-    "producto-15.jpg",
-    "producto-20.jpg",
-    "producto-25.jpg",
-];
+// ==========================================
+// Carrito de compras
+// ==========================================
+let cart = [];
+
+function loadCart() {
+    try {
+        const saved = localStorage.getItem("millacuatro_cart");
+        if (saved) cart = JSON.parse(saved);
+    } catch (e) {
+        cart = [];
+    }
+}
+
+function saveCart() {
+    localStorage.setItem("millacuatro_cart", JSON.stringify(cart));
+}
+
+function addToCart(productId) {
+    const product = PRODUCTS.find(p => p.id === productId);
+    if (!product) return;
+
+    const existing = cart.find(item => item.id === productId);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ id: product.id, quantity: 1 });
+    }
+    saveCart();
+    updateCartUI();
+    showCartNotification();
+}
+
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart();
+    updateCartUI();
+}
+
+function updateQuantity(productId, delta) {
+    const item = cart.find(i => i.id === productId);
+    if (!item) return;
+
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+        removeFromCart(productId);
+        return;
+    }
+    saveCart();
+    updateCartUI();
+}
+
+function getCartTotal() {
+    return cart.reduce((total, item) => {
+        const product = PRODUCTS.find(p => p.id === item.id);
+        return total + (product ? product.price * item.quantity : 0);
+    }, 0);
+}
+
+function getCartCount() {
+    return cart.reduce((count, item) => count + item.quantity, 0);
+}
+
+// ==========================================
+// UI Carrito
+// ==========================================
+function renderCartItems() {
+    const cartItems = document.getElementById("cart-items");
+    const cartTotal = document.getElementById("cart-total");
+    const cartCount = document.getElementById("cart-count");
+
+    if (!cartItems) return;
+
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="cart__empty">Tu carrito está vacío</p>';
+    } else {
+        cartItems.innerHTML = cart.map(item => {
+            const product = PRODUCTS.find(p => p.id === item.id);
+            if (!product) return "";
+            return `
+                <div class="cart__item">
+                    <img src="${product.image}" alt="${product.name}" class="cart__item-img">
+                    <div class="cart__item-info">
+                        <h4 class="cart__item-name">${product.name}</h4>
+                        <p class="cart__item-price">$${product.price.toLocaleString()}</p>
+                        <div class="cart__item-controls">
+                            <button class="cart__qty-btn" onclick="updateQuantity(${product.id}, -1)">-</button>
+                            <span class="cart__qty">${item.quantity}</span>
+                            <button class="cart__qty-btn" onclick="updateQuantity(${product.id}, 1)">+</button>
+                            <button class="cart__remove" onclick="removeFromCart(${product.id})">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    if (cartTotal) {
+        cartTotal.textContent = "$" + getCartTotal().toLocaleString();
+    }
+
+    if (cartCount) {
+        cartCount.textContent = getCartCount();
+    }
+}
+
+function updateCartUI() {
+    renderCartItems();
+}
+
+function toggleCart() {
+    const cartSidebar = document.getElementById("cart-sidebar");
+    const cartOverlay = document.getElementById("cart-overlay");
+    if (!cartSidebar) return;
+
+    cartSidebar.classList.toggle("active");
+    if (cartOverlay) cartOverlay.classList.toggle("active");
+    document.body.style.overflow = cartSidebar.classList.contains("active") ? "hidden" : "";
+}
+
+function closeCart() {
+    const cartSidebar = document.getElementById("cart-sidebar");
+    const cartOverlay = document.getElementById("cart-overlay");
+    if (cartSidebar) cartSidebar.classList.remove("active");
+    if (cartOverlay) cartOverlay.classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+function showCartNotification() {
+    const cartBtn = document.getElementById("cart-btn");
+    if (!cartBtn) return;
+    cartBtn.classList.add("cart--added");
+    setTimeout(() => cartBtn.classList.remove("cart--added"), 300);
+}
+
+// ==========================================
+// Checkout WhatsApp
+// ==========================================
+function checkoutWhatsApp() {
+    if (cart.length === 0) return;
+
+    let message = "Hola! Quiero hacer el siguiente pedido:%0A%0A";
+    cart.forEach(item => {
+        const product = PRODUCTS.find(p => p.id === item.id);
+        if (product) {
+            message += `- ${product.name} x${item.quantity}: $${(product.price * item.quantity).toLocaleString()}%0A`;
+        }
+    });
+    message += `%0A*Total: $${getCartTotal().toLocaleString()}*%0A%0A`;
+    message += "Medio de pago: ";
+
+    const payment = document.querySelector('input[name="payment"]:checked');
+    if (payment) {
+        message += payment.value === "transfer" ? "Transferencia bancaria" : "Mercado Pago";
+    } else {
+        message += "A coordinar";
+    }
+
+    const phone = "5492233396959";
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+}
 
 // ==========================================
 // Preloader
@@ -49,7 +177,6 @@ function initPreloader() {
     const preloader = document.getElementById("preloader");
     if (!preloader) return;
 
-    const heroVideo = document.querySelector(".hero__video");
     let loaded = false;
 
     function hidePreloader() {
@@ -61,12 +188,8 @@ function initPreloader() {
         }, 600);
     }
 
-    // Hide after video loads or 2.5s max
-    if (heroVideo) {
-        heroVideo.addEventListener("canplaythrough", hidePreloader);
-        heroVideo.addEventListener("error", hidePreloader);
-    }
-    setTimeout(hidePreloader, 2500);
+    // Ocultar siempre después de 1.5s máximo, sin depender del video
+    setTimeout(hidePreloader, 1500);
 }
 
 // ==========================================
@@ -97,7 +220,6 @@ function initCursor() {
     }
     animateFollower();
 
-    // Hover effect on interactive elements
     const interactives = document.querySelectorAll("a, button, .gallery__item, .lookbook__item, .instagram-feed__item, .lightbox");
     interactives.forEach((el) => {
         el.addEventListener("mouseenter", () => {
@@ -183,44 +305,72 @@ function initMobileMenu() {
 }
 
 // ==========================================
-// Gallery
+// Gallery - Catálogo completo
 // ==========================================
 let currentFilter = "all";
 
 function renderGallery(filter) {
-    const grid = document.getElementById("gallery-grid");
+    const grid = document.getElementById("catalog-grid");
     if (!grid) return;
 
     currentFilter = filter || "all";
     grid.innerHTML = "";
 
     const filtered = filter === "all"
-        ? IMAGES
-        : IMAGES.filter((img) => img.cat === filter);
+        ? PRODUCTS
+        : PRODUCTS.filter((p) => p.category === filter);
 
-    filtered.forEach((imgData, index) => {
+    filtered.forEach((product, index) => {
         const item = document.createElement("div");
-        item.className = "gallery__item anim-reveal";
-        item.dataset.category = imgData.cat;
+        item.className = "catalog__item anim-reveal";
+        item.dataset.category = product.category;
         item.dataset.delay = (index % 4) * 80;
 
+        // Imagen
+        const imageWrap = document.createElement("div");
+        imageWrap.className = "catalog__item-image";
+
         const img = document.createElement("img");
-        img.src = `assets/productos/${imgData.file}`;
-        img.alt = `MillaCuatro - ${imgData.file.replace(".jpg", "").replace("producto-", "Producto ")}`;
+        img.src = product.image;
+        img.alt = product.name;
         img.loading = "lazy";
 
-        const overlay = document.createElement("div");
-        overlay.className = "gallery__item-overlay";
+        const badge = document.createElement("span");
+        badge.className = "catalog__item-badge";
+        badge.textContent = product.category === "activewear" ? "Activewear" : product.category === "bikini" ? "Bikini" : "Accesorio";
 
-        const label = document.createElement("span");
-        label.className = "gallery__item-label";
-        label.textContent = imgData.cat === "activewear" ? "Activewear" : "Bikini";
+        imageWrap.appendChild(img);
+        imageWrap.appendChild(badge);
+        imageWrap.addEventListener("click", () => window.open(product.url, '_blank'));
 
-        overlay.appendChild(label);
-        item.appendChild(img);
-        item.appendChild(overlay);
+        // Contenido
+        const content = document.createElement("div");
+        content.className = "catalog__item-content";
 
-        item.addEventListener("click", () => openLightbox(img.src));
+        const category = document.createElement("p");
+        category.className = "catalog__item-category";
+        category.textContent = product.category === "activewear" ? "Activewear" : product.category === "bikini" ? "Bikini" : "Accesorio";
+
+        const title = document.createElement("h3");
+        title.className = "catalog__item-title";
+        title.textContent = product.name;
+
+        const price = document.createElement("p");
+        price.className = "catalog__item-price";
+        price.textContent = "$" + product.price.toLocaleString();
+
+        const addBtn = document.createElement("button");
+        addBtn.className = "catalog__add-btn";
+        addBtn.textContent = "Agregar al carrito";
+        addBtn.onclick = () => addToCart(product.id);
+
+        content.appendChild(category);
+        content.appendChild(title);
+        content.appendChild(price);
+        content.appendChild(addBtn);
+
+        item.appendChild(imageWrap);
+        item.appendChild(content);
 
         grid.appendChild(item);
     });
@@ -229,7 +379,7 @@ function renderGallery(filter) {
 }
 
 function initGalleryFilters() {
-    const filters = document.querySelectorAll(".gallery__filter");
+    const filters = document.querySelectorAll(".catalog__filter");
     filters.forEach((btn) => {
         btn.addEventListener("click", () => {
             filters.forEach((f) => f.classList.remove("active"));
@@ -237,6 +387,20 @@ function initGalleryFilters() {
             renderGallery(btn.dataset.filter);
         });
     });
+
+    const filtersContainer = document.querySelector(".catalog__filters");
+    if (filtersContainer && !filtersContainer.querySelector('[data-filter="accesorio"]')) {
+        const accesorioBtn = document.createElement("button");
+        accesorioBtn.className = "catalog__filter";
+        accesorioBtn.dataset.filter = "accesorio";
+        accesorioBtn.textContent = "Accesorios";
+        accesorioBtn.addEventListener("click", () => {
+            filters.forEach((f) => f.classList.remove("active"));
+            accesorioBtn.classList.add("active");
+            renderGallery("accesorio");
+        });
+        filtersContainer.appendChild(accesorioBtn);
+    }
 }
 
 // ==========================================
@@ -297,7 +461,6 @@ function initTestimonialsSlider() {
     let currentSlide = 0;
     let autoplayTimer;
 
-    // Create dots
     dotsContainer.innerHTML = "";
     for (let i = 0; i < totalSlides; i++) {
         const dot = document.createElement("button");
@@ -331,10 +494,9 @@ function initTestimonialsSlider() {
         autoplayTimer = setInterval(nextSlide, 5000);
     }
 
-    // Detect scroll position to update dots
     track.addEventListener("scroll", () => {
         const scrollLeft = track.scrollLeft;
-        const slideWidth = slides[0].offsetWidth + 24; // gap
+        const slideWidth = slides[0].offsetWidth + 24;
         const newSlide = Math.round(scrollLeft / slideWidth);
         if (newSlide !== currentSlide && newSlide >= 0 && newSlide < totalSlides) {
             currentSlide = newSlide;
@@ -369,7 +531,15 @@ function renderInstagramFeed() {
 
     grid.innerHTML = "";
 
-    IG_IMAGES.forEach((filename) => {
+    const images = PRODUCTS.slice(0, 6).map(p => p.image.replace("https://d22fxaf9t8d39k.cloudfront.net/", ""));
+    const fallbackImages = [
+        "producto-01.jpg", "producto-05.jpg", "producto-10.jpg",
+        "producto-15.jpg", "producto-20.jpg", "producto-25.jpg"
+    ];
+
+    const displayImages = images.length >= 6 ? images : fallbackImages;
+
+    displayImages.forEach((filename) => {
         const item = document.createElement("a");
         item.className = "instagram-feed__item";
         item.href = "https://www.instagram.com/__millacuatro/";
@@ -438,9 +608,67 @@ function initSmoothScroll() {
 }
 
 // ==========================================
+// Inicialización del carrito en el DOM
+// ==========================================
+function injectCartHTML() {
+    const header = document.querySelector(".header__inner");
+    if (!header || document.getElementById("cart-btn")) return;
+
+    const cartBtn = document.createElement("button");
+    cartBtn.id = "cart-btn";
+    cartBtn.className = "header__cart-btn";
+    cartBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="header__cart-count" id="cart-count">0</span>
+    `;
+    cartBtn.onclick = toggleCart;
+    header.appendChild(cartBtn);
+
+    const cartSidebar = document.createElement("div");
+    cartSidebar.id = "cart-sidebar";
+    cartSidebar.className = "cart";
+    cartSidebar.innerHTML = `
+        <div class="cart__header">
+            <h3 class="cart__title">Tu Carrito</h3>
+            <button class="cart__close" onclick="closeCart()">&times;</button>
+        </div>
+        <div class="cart__items" id="cart-items"></div>
+        <div class="cart__footer">
+            <div class="cart__total">
+                <span>Total:</span>
+                <span id="cart-total">$0</span>
+            </div>
+            <div class="cart__payment">
+                <label class="cart__payment-label">
+                    <input type="radio" name="payment" value="transfer" checked> Transferencia
+                </label>
+                <label class="cart__payment-label">
+                    <input type="radio" name="payment" value="mp"> Mercado Pago
+                </label>
+            </div>
+            <button class="btn btn--primary btn--full" onclick="checkoutWhatsApp()">Confirmar pedido por WhatsApp</button>
+        </div>
+    `;
+    document.body.appendChild(cartSidebar);
+
+    const cartOverlay = document.createElement("div");
+    cartOverlay.id = "cart-overlay";
+    cartOverlay.className = "cart__overlay";
+    cartOverlay.onclick = closeCart;
+    document.body.appendChild(cartOverlay);
+}
+
+// ==========================================
 // Init
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
+    loadCart();
+    injectCartHTML();
+    updateCartUI();
     initPreloader();
     createLightbox();
     renderGallery("all");

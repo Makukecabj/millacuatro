@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MillaCuatro | Activewear y Bikinis en Mar del Plata</title>
-    <meta name="description" content="MillaCuatro - Activewear y bikinis en Mar del Plata. Envios a todo el pais. Somos un estilo de vida.">
+    <meta name="description"
+        content="MillaCuatro - Activewear y bikinis en Mar del Plata. Envios a todo el pais. Somos un estilo de vida.">
     <link rel="icon" type="image/jpeg" href="assets/logo.jpeg">
     <link rel="apple-touch-icon" href="assets/logo.jpeg">
     <meta property="og:title" content="MillaCuatro | Activewear y Bikinis en Mar del Plata">
-    <meta property="og:description" content="Activewear y bikinis en Mar del Plata. Envios a todo el pais. Somos un estilo de vida.">
+    <meta property="og:description"
+        content="Activewear y bikinis en Mar del Plata. Envios a todo el pais. Somos un estilo de vida.">
     <meta property="og:image" content="https://millacuatro.vercel.app/assets/logo.jpeg">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://millacuatro.vercel.app">
@@ -18,18 +21,13 @@
     <meta name="twitter:image" content="https://millacuatro.vercel.app/assets/logo.jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
 
-    <!-- Preloader -->
-    <div class="preloader" id="preloader">
-        <div class="preloader__inner">
-            <span class="preloader__logo">MillaCuatro</span>
-            <div class="preloader__bar"><div class="preloader__bar-fill"></div></div>
-        </div>
-    </div>
+<body>
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
@@ -45,6 +43,15 @@
                 <a href="#info" class="header__link">Info</a>
                 <a href="#contacto" class="header__link header__link--cta">WhatsApp</a>
             </nav>
+            <button class="header__cart-btn" id="cart-btn" aria-label="Carrito">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" width="24" height="24">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="header__cart-count" id="cart-count">0</span>
+            </button>
             <button class="header__burger" id="burger" aria-label="Menu">
                 <span></span>
                 <span></span>
@@ -77,10 +84,12 @@
                 <span class="hero__title-line">Somos</span>
                 <span class="hero__title-line hero__title-line--accent">MillaCuatro</span>
             </h1>
-            <p class="hero__subtitle anim-fade-up" style="animation-delay: 0.3s">Activewear y bikinis. No somos una marca, somos un estilo de vida.</p>
+            <p class="hero__subtitle anim-fade-up" style="animation-delay: 0.3s">Activewear y bikinis. No somos una
+                marca, somos un estilo de vida.</p>
             <div class="hero__actions anim-fade-up" style="animation-delay: 0.45s">
                 <a href="#coleccion" class="btn btn--primary">Ver coleccion</a>
-                <a href="https://wa.me/5492233396959" class="btn btn--outline" target="_blank" rel="noopener">Escribinos</a>
+                <a href="https://wa.me/5492233396959" class="btn btn--outline" target="_blank"
+                    rel="noopener">Escribinos</a>
             </div>
             <div class="hero__scroll anim-fade-up" style="animation-delay: 0.6s">
                 <div class="hero__scroll-line"></div>
@@ -146,19 +155,20 @@
         </div>
     </section>
 
-    <!-- Galeria de Productos -->
-    <section class="gallery" id="coleccion">
+    <!-- Catalogo -->
+    <section class="catalog" id="coleccion">
         <div class="container">
             <div class="section-header">
                 <p class="section-header__tag anim-reveal">Nueva coleccion</p>
                 <h2 class="section-header__title anim-reveal">Lo que tenemos para vos</h2>
             </div>
-            <div class="gallery__filters anim-reveal">
-                <button class="gallery__filter active" data-filter="all">Todo</button>
-                <button class="gallery__filter" data-filter="activewear">Activewear</button>
-                <button class="gallery__filter" data-filter="bikini">Bikinis</button>
+            <div class="catalog__filters anim-reveal">
+                <button class="catalog__filter active" data-filter="all">Todo</button>
+                <button class="catalog__filter" data-filter="activewear">Activewear</button>
+                <button class="catalog__filter" data-filter="bikini">Bikinis</button>
+                <button class="catalog__filter" data-filter="accesorio">Accesorios</button>
             </div>
-            <div class="gallery__grid" id="gallery-grid">
+            <div class="catalog__grid" id="catalog-grid">
                 <!-- Se llena con JS -->
             </div>
         </div>
@@ -175,7 +185,8 @@
                     <p class="section-header__tag anim-reveal">Nuestra historia</p>
                     <h2 class="about__title anim-reveal">Nacimos en Mar del Plata</h2>
                     <p class="about__desc anim-reveal">
-                        Somos un estilo de vida. Creamos activewear y bikinis para las que quieren sentirse comodas y lindas, ya sea en el gimnasio, en la playa o en el dia a dia.
+                        Somos un estilo de vida. Creamos activewear y bikinis para las que quieren sentirse comodas y
+                        lindas, ya sea en el gimnasio, en la playa o en el dia a dia.
                     </p>
                     <p class="about__desc anim-reveal">
                         Por mayor y por menor. Envios a todo el pais y al mundo.
@@ -211,7 +222,8 @@
                     <div class="testimonials__slide">
                         <div class="testimonials__card">
                             <div class="testimonials__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <p class="testimonials__text">"Los mejores activewear que compre. La tela es hermosa y queda re comoda. Soy de Mendoza y me llego al toque."</p>
+                            <p class="testimonials__text">"Los mejores activewear que compre. La tela es hermosa y queda
+                                re comoda. Soy de Mendoza y me llego al toque."</p>
                             <div class="testimonials__author">
                                 <span class="testimonials__name">Camila R.</span>
                                 <span class="testimonials__location">Mendoza</span>
@@ -221,7 +233,8 @@
                     <div class="testimonials__slide">
                         <div class="testimonials__card">
                             <div class="testimonials__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <p class="testimonials__text">"Compre un bikini y quede enamorada. La calidad es increible y el envio fue super rapido. 100% recomendable."</p>
+                            <p class="testimonials__text">"Compre un bikini y quede enamorada. La calidad es increible y
+                                el envio fue super rapido. 100% recomendable."</p>
                             <div class="testimonials__author">
                                 <span class="testimonials__name">Sofia M.</span>
                                 <span class="testimonials__location">Buenos Aires</span>
@@ -231,7 +244,8 @@
                     <div class="testimonials__slide">
                         <div class="testimonials__card">
                             <div class="testimonials__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <p class="testimonials__text">"Soy nutricionista y uso la ropa para trabajar. Es comoda, linda y queda perfecta. Ya hice 3 pedidos."</p>
+                            <p class="testimonials__text">"Soy nutricionista y uso la ropa para trabajar. Es comoda,
+                                linda y queda perfecta. Ya hice 3 pedidos."</p>
                             <div class="testimonials__author">
                                 <span class="testimonials__name">Valentina L.</span>
                                 <span class="testimonials__location">Mar del Plata</span>
@@ -241,7 +255,8 @@
                     <div class="testimonials__slide">
                         <div class="testimonials__card">
                             <div class="testimonials__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <p class="testimonials__text">"El mejor lugar para comprar activewear. Los colores son hermosos y los precios son muy buenos para la calidad."</p>
+                            <p class="testimonials__text">"El mejor lugar para comprar activewear. Los colores son
+                                hermosos y los precios son muy buenos para la calidad."</p>
                             <div class="testimonials__author">
                                 <span class="testimonials__name">Julieta P.</span>
                                 <span class="testimonials__location">Cordoba</span>
@@ -251,7 +266,8 @@
                     <div class="testimonials__slide">
                         <div class="testimonials__card">
                             <div class="testimonials__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <p class="testimonials__text">"Les compre a mis amigas y todas quedaron encantadas. Son re lindos y muy comodos para el gym y la playa."</p>
+                            <p class="testimonials__text">"Les compre a mis amigas y todas quedaron encantadas. Son re
+                                lindos y muy comodos para el gym y la playa."</p>
                             <div class="testimonials__author">
                                 <span class="testimonials__name">Lucia A.</span>
                                 <span class="testimonials__location">Santa Fe</span>
@@ -274,28 +290,48 @@
             <div class="info__grid">
                 <div class="info__card anim-reveal">
                     <div class="info__card-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
                     </div>
                     <h3 class="info__card-title">Ubicacion</h3>
                     <p class="info__card-text">Alberti 1379, 1G<br>Mar del Plata, Buenos Aires</p>
                 </div>
                 <div class="info__card anim-reveal">
                     <div class="info__card-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="3" width="15" height="13" />
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                            <circle cx="18.5" cy="18.5" r="2.5" />
+                        </svg>
                     </div>
                     <h3 class="info__card-title">Envios</h3>
                     <p class="info__card-text">Envios a todo el pais y al mundo. Coordinamos por WhatsApp.</p>
                 </div>
                 <div class="info__card anim-reveal">
                     <div class="info__card-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                            <line x1="1" y1="10" x2="23" y2="10" />
+                        </svg>
                     </div>
                     <h3 class="info__card-title">Medios de pago</h3>
                     <p class="info__card-text">Efectivo, transferencia o Mercado Pago. Lo que te quede mas comodo.</p>
                 </div>
                 <div class="info__card anim-reveal">
                     <div class="info__card-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
                     </div>
                     <h3 class="info__card-title">Mayorista</h3>
                     <p class="info__card-text">Trabajamos por mayor y por menor. Consultanos por precios especiales.</p>
@@ -339,7 +375,11 @@
                 <h2 class="cta__title">Tenes alguna consulta?</h2>
                 <p class="cta__text">Escribinos por WhatsApp y te respondemos al toque.</p>
                 <a href="https://wa.me/5492233396959" class="btn btn--primary btn--lg" target="_blank" rel="noopener">
-                    <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor" style="margin-right: 8px; vertical-align: middle;"><path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.058 9.374L1.054 31.25l6.112-1.97C9.688 30.994 12.764 32 16.004 32 24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.326 22.594c-.39 1.096-1.932 2.008-3.158 2.27-.84.18-1.936.322-5.648-1.216-4.75-1.97-7.806-6.79-8.04-7.104-.226-.314-1.896-2.524-1.896-4.814s1.2-3.41 1.63-3.882c.39-.428.924-.56 1.23-.56.314 0 .628.004.902.016.29.012.68-.11 1.064.812.39.944 1.33 3.24 1.446 3.472.116.232.194.504-.04.818-.232.314-.39.504-.78.818-.39.314-.78.702-.112 1.336.668.634 1.186 1.14 1.818 1.834.816.892 1.51 1.17 2.054 1.302.544.132.856-.116 1.17-.648.2-.338.47-.884.736-1.418.188-.39.428-.438.722-.264.296.172 1.872.884 2.194 1.042.322.158.536.238.614.37.078.132.078.764-.312 1.86z"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor"
+                        style="margin-right: 8px; vertical-align: middle;">
+                        <path
+                            d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.058 9.374L1.054 31.25l6.112-1.97C9.688 30.994 12.764 32 16.004 32 24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.326 22.594c-.39 1.096-1.932 2.008-3.158 2.27-.84.18-1.936.322-5.648-1.216-4.75-1.97-7.806-6.79-8.04-7.104-.226-.314-1.896-2.524-1.896-4.814s1.2-3.41 1.63-3.882c.39-.428.924-.56 1.23-.56.314 0 .628.004.902.016.29.012.68-.11 1.064.812.39.944 1.33 3.24 1.446 3.472.116.232.194.504-.04.818-.232.314-.39.504-.78.818-.39.314-.78.702-.112 1.336.668.634 1.186 1.14 1.818 1.834.816.892 1.51 1.17 2.054 1.302.544.132.856-.116 1.17-.648.2-.338.47-.884.736-1.418.188-.39.428-.438.722-.264.296.172 1.872.884 2.194 1.042.322.158.536.238.614.37.078.132.078.764-.312 1.86z" />
+                    </svg>
                     Escribinos por WhatsApp
                 </a>
             </div>
@@ -355,8 +395,10 @@
                     <p class="footer__tagline">Activewear y bikinis desde Mar del Plata</p>
                 </div>
                 <div class="footer__links">
-                    <a href="https://www.instagram.com/__millacuatro/" target="_blank" rel="noopener" class="footer__link">Instagram</a>
-                    <a href="https://wa.me/5492233396959" target="_blank" rel="noopener" class="footer__link">WhatsApp</a>
+                    <a href="https://www.instagram.com/__millacuatro/" target="_blank" rel="noopener"
+                        class="footer__link">Instagram</a>
+                    <a href="https://wa.me/5492233396959" target="_blank" rel="noopener"
+                        class="footer__link">WhatsApp</a>
                 </div>
                 <p class="footer__copy">&copy; 2026 MillaCuatro. Todos los derechos reservados.</p>
             </div>
@@ -366,10 +408,13 @@
     <!-- Boton fijo de WhatsApp -->
     <a href="https://wa.me/5492233396959" class="whatsapp-float" target="_blank" rel="noopener" aria-label="WhatsApp">
         <svg viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.058 9.374L1.054 31.25l6.112-1.97C9.688 30.994 12.764 32 16.004 32 24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.326 22.594c-.39 1.096-1.932 2.008-3.158 2.27-.84.18-1.936.322-5.648-1.216-4.75-1.97-7.806-6.79-8.04-7.104-.226-.314-1.896-2.524-1.896-4.814s1.2-3.41 1.63-3.882c.39-.428.924-.56 1.23-.56.314 0 .628.004.902.016.29.012.68-.11 1.064.812.39.944 1.33 3.24 1.446 3.472.116.232.194.504-.04.818-.232.314-.39.504-.78.818-.39.314-.78.702-.112 1.336.668.634 1.186 1.14 1.818 1.834.816.892 1.51 1.17 2.054 1.302.544.132.856-.116 1.17-.648.2-.338.47-.884.736-1.418.188-.39.428-.438.722-.264.296.172 1.872.884 2.194 1.042.322.158.536.238.614.37.078.132.078.764-.312 1.86z"/>
+            <path
+                d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.744 3.058 9.374L1.054 31.25l6.112-1.97C9.688 30.994 12.764 32 16.004 32 24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.326 22.594c-.39 1.096-1.932 2.008-3.158 2.27-.84.18-1.936.322-5.648-1.216-4.75-1.97-7.806-6.79-8.04-7.104-.226-.314-1.896-2.524-1.896-4.814s1.2-3.41 1.63-3.882c.39-.428.924-.56 1.23-.56.314 0 .628.004.902.016.29.012.68-.11 1.064.812.39.944 1.33 3.24 1.446 3.472.116.232.194.504-.04.818-.232.314-.39.504-.78.818-.39.314-.78.702-.112 1.336.668.634 1.186 1.14 1.818 1.834.816.892 1.51 1.17 2.054 1.302.544.132.856-.116 1.17-.648.2-.338.47-.884.736-1.418.188-.39.428-.438.722-.264.296.172 1.872.884 2.194 1.042.322.158.536.238.614.37.078.132.078.764-.312 1.86z" />
         </svg>
     </a>
 
+    <script src="js/products.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>
