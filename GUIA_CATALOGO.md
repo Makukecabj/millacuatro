@@ -3,7 +3,18 @@
 La tienda se publica desde la carpeta `docs/` (Vercel `outputDirectory: docs`).
 Cada cambio que hagas en esa carpeta y subas a GitHub se publica solo, sin costo.
 
-## Opción 1 (recomendada): editar el JSON
+## Orden de fuentes del catálogo
+
+1. **Supabase** (si está configurado): fuente principal, con panel visual en `/admin`
+   y actualización en tiempo real. Seguí `GUIA_SUPABASE.md`.
+2. **Google Sheets** (si `catalogUrl` tiene una URL): instalaciones antiguas.
+3. **`data/products.json`**: respaldo automático si fallan las anteriores.
+4. **`products.js`**: último respaldo incluido en el sitio.
+
+Cuando Supabase está configurado, **no hace falta editar el JSON a mano**: los cambios
+se hacen desde `/admin` y se ven en la tienda al instante.
+
+## Opción 1: editar el JSON (sin Supabase)
 
 1. En GitHub, entrá a `docs/data/products.json`.
 2. Tocá el lápiz y editá el producto que quieras.

@@ -1,24 +1,39 @@
 /* ========================================
    MillaCuatro - Configuración de la tienda
    ========================================
-   Este archivo centraliza los valores que la dueña puede necesitar cambiar.
+   Valores centralizados de la tienda y del panel de administración.
 
-   CATÁLOGO
-   - Con catalogUrl vacío, la tienda lee "data/products.json".
-     Para editar: GitHub > docs/data/products.json > lápiz > Commit.
-     Vercel vuelve a publicar automáticamente (costo cero).
-   - Para usar Google Sheets:
-     1) Crear una planilla con estas columnas (encabezados en la fila 1):
-        id | nombre | precio | descripcion | categoria | imagen | talles | colores
-     2) Archivo > Compartir > Publicar en internet > formato CSV > Publicar.
-     3) Copiar la URL que termina en "output=csv" y pegarla en catalogUrl.
-        Ejemplo: https://docs.google.com/spreadsheets/d/e/TU_ID/pub?gid=0&single=true&output=csv
-     4) talles y colores se escriben separados por "|" (Ej: S|M|L  y  Negro|Rosa).
-     Si la planilla falla o Google bloquea la request (CORS), se usa el JSON local.
+   SUPABASE (fuente principal del catálogo)
+   - Creá un proyecto gratis en https://supabase.com
+   - Ejecutá supabase/schema.sql y supabase/seed.sql en el SQL Editor.
+   - Pegá aquí la Project URL y la anon/public key (NUNCA la service_role key).
+   - adminEmail debe ser el email con el que se loguea la dueña en /admin.
+   - Con esta configuración completa, la tienda lee en tiempo real y el
+     panel /admin permite crear, editar y borrar productos.
+
+   Si Supabase no está configurado o no responde, se usa data/products.json
+   (y como último respaldo, products.js). La opción catalogUrl de Google Sheets
+   queda como fuente intermedia para instalaciones antiguas.
 */
 const STORE_CONFIG = Object.freeze({
-    catalogUrl: "",                      // URL CSV publicada de Google Sheets ("" = JSON local)
+    supabase: {
+        url: "https://ttstlvpwngsrccedkbxz.supabase.co",
+        anonKey: "sb_publishable_AMGeCZmMXJJG39wQWOAcwA_eeBUUtKt", // publishable key (segura en el front con RLS)
+        productsTable: "products",
+        storageBucket: "productos",
+        adminEmail: "maiawaltermw@gmail.com"   // única cuenta con acceso al panel /admin (RLS en Supabase)
+    },
+    catalogUrl: "",                      // Google Sheets CSV (opcional, legado)
     whatsappPhone: "5492233396959",      // Número de la tienda, con código de país
     locale: "es-AR",                     // Formato de precios argentinos: $ 43.000
     currency: "ARS"
 });
+
+/** True solo cuando hay URL y key cargadas. */
+function isSupabaseConfigured() {
+    return Boolean(STORE_CONFIG.supabase.url && STORE_CONFIG.supabase.anonKey);
+}
+
+// Exponer la configuración también a los <script type="module"> (admin y realtime).
+window.STORE_CONFIG = STORE_CONFIG;
+window.isSupabaseConfigured = isSupabaseConfigured;

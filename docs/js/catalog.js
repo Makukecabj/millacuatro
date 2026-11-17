@@ -195,12 +195,44 @@ function normalizeCatalog(data) {
     return list.map(normalizeProduct).filter(Boolean);
 }
 
+/** Lee los productos desde la REST API de Supabase con la anon key (RLS solo lectura pública). */
+async function fetchSupabaseProducts() {
+    if (typeof isSupabaseConfigured !== "function" || !isSupabaseConfigured()) return null;
+
+    const { url, anonKey, productsTable } = STORE_CONFIG.supabase;
+    const endpoint = `${String(url).replace(/\/$/, "")}/rest/v1/${encodeURIComponent(productsTable)}` +
+        "?select=id,name,price,description,category,image,sizes,colors&order=created_at.asc";
+
+    const response = await fetch(endpoint, {
+        headers: {
+            apikey: anonKey,
+            Authorization: `Bearer ${anonKey}`
+        },
+        cache: "no-store"
+    });
+    if (!response.ok) throw new Error(`Supabase HTTP ${response.status}`);
+
+    const products = normalizeCatalog(await response.json());
+    if (!products.length) throw new Error("Supabase no devolvió productos válidos");
+    return products;
+}
+
 /**
  * Carga el catálogo y devuelve { products, source }.
  * Nunca lanza: ante cualquier error se usa la siguiente fuente disponible.
  */
 async function fetchCatalog() {
-    // 1) Google Sheets publicado como CSV.
+    // 1) Supabase (fuente principal y tiempo real).
+    if (typeof isSupabaseConfigured === "function" && isSupabaseConfigured()) {
+        try {
+            const products = await fetchSupabaseProducts();
+            if (products && products.length) return { products, source: "supabase" };
+        } catch (error) {
+            console.warn("[MillaCuatro] Supabase no disponible; se prueban las fuentes locales.", error);
+        }
+    }
+
+    // 2) Google Sheets publicado como CSV (instalaciones antiguas).
     const sheetUrl = String(STORE_CONFIG.catalogUrl || "").trim();
     if (sheetUrl) {
         try {
@@ -214,7 +246,7 @@ async function fetchCatalog() {
         }
     }
 
-    // 2) JSON local.
+    // 3) JSON local.
     try {
         const response = await fetch("data/products.json", { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -225,7 +257,7 @@ async function fetchCatalog() {
         console.warn("[MillaCuatro] products.json no disponible; se usa products.js como respaldo.", error);
     }
 
-    // 3) Respaldo incluido en el sitio (permite abrir el HTML sin servidor).
+    // 4) Respaldo incluido en el sitio (permite abrir el HTML sin servidor).
     const fallback = typeof PRODUCTS !== "undefined" ? normalizeCatalog(PRODUCTS) : [];
     return { products: fallback, source: "fallback" };
 }

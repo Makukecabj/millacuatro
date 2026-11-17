@@ -968,9 +968,30 @@ function initModalEvents() {
 }
 
 // ==========================================
+// Recarga del catálogo (inicial y tiempo real)
+// ==========================================
+async function reloadCatalog() {
+    const { products, source } = await fetchCatalog();
+    catalog = products;
+    catalogSource = source;
+    console.info(`[MillaCuatro] Catálogo cargado desde ${source} (${catalog.length} productos).`);
+
+    normalizeCart(); // descarta productos que ya no están en la fuente actual
+    saveCart();
+    renderGallery(currentFilter);
+    renderInstagramFeed();
+    updateCartUI();
+}
+
+// ==========================================
 // Init
 // ==========================================
 document.addEventListener("DOMContentLoaded", async () => {
+    // realtime.js dispara este evento cuando cambia la tabla en Supabase.
+    window.addEventListener("millacuatro:catalog-changed", () => {
+        reloadCatalog().catch((error) => console.warn("[MillaCuatro] No se pudo refrescar el catálogo.", error));
+    });
+
     loadCart();
     injectCartHTML();
     updateCartUI();
@@ -996,14 +1017,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         grid.appendChild(loading);
     }
 
-    const { products, source } = await fetchCatalog();
-    catalog = products;
-    catalogSource = source;
-    console.info(`[MillaCuatro] Catálogo cargado desde ${source} (${catalog.length} productos).`);
-
-    normalizeCart(); // descarta productos que ya no están en la fuente actual
-    saveCart();
-    renderGallery(currentFilter);
-    renderInstagramFeed();
-    updateCartUI();
+    await reloadCatalog();
 });
