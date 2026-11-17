@@ -6,7 +6,35 @@
 // ==========================================
 // Catálogo MillaCuatro
 // ==========================================
-// Los productos se cargan desde products.js
+// Se carga de forma asíncrona desde JSON local o Google Sheets (ver js/catalog.js).
+let catalog = [];
+let catalogSource = "local";
+let currentModalProduct = null;
+let selectedSize = null;
+let selectedColor = null;
+
+const moneyFormatter = new Intl.NumberFormat(STORE_CONFIG.locale, {
+    style: "currency",
+    currency: STORE_CONFIG.currency,
+    maximumFractionDigits: 0
+});
+
+/** $ 43.000 en vez de 43000. */
+function formatMoney(value) {
+    return moneyFormatter.format(Number(value) || 0);
+}
+
+/** Acepta rutas locales, nombres de archivo y URLs externas (compatibilidad con la planilla vieja). */
+function resolveImageSrc(image) {
+    if (!image) return "assets/productos/producto-01.jpg";
+    if (/^(https?:)?\/\//.test(image) || image.startsWith("data:")) return image;
+    return image.startsWith("assets/") ? image : `assets/productos/${image}`;
+}
+
+/** Busca un producto del catálogo por id (siempre como string). */
+function findProduct(productId) {
+    return catalog.find((product) => product.id === String(productId));
+}
 
 // ==========================================
 // Carrito de compras
@@ -20,40 +48,76 @@ function loadCart() {
     } catch (e) {
         cart = [];
     }
+    normalizeCart();
+}
+
+/** Limpia el carrito guardado: descarta productos que ya no están y unifica variantes. */
+function normalizeCart() {
+    if (!Array.isArray(cart)) cart = [];
+    const seen = new Map();
+
+    cart.forEach((item) => {
+        if (!item || !item.id) return;
+        const size = item.size === "Sin talle" ? "" : (item.size || "");
+        const color = item.color === "Sin color" ? "" : (item.color || "");
+        const quantity = Math.max(1, parseInt(item.quantity, 10) || 1);
+        const key = `${item.id}||${size}||${color}`;
+
+        if (seen.has(key)) {
+            seen.get(key).quantity += quantity;
+        } else {
+            seen.set(key, { id: String(item.id), quantity, size, color });
+        }
+    });
+
+    // Si el catálogo ya cargó, ignorar productos eliminados de la planilla/JSON.
+    cart = Array.from(seen.values()).filter((item) => !catalog.length || findProduct(item.id));
 }
 
 function saveCart() {
-    localStorage.setItem("millacuatro_cart", JSON.stringify(cart));
+    try {
+        localStorage.setItem("millacuatro_cart", JSON.stringify(cart));
+    } catch (e) {
+        console.warn("[MillaCuatro] No se pudo guardar el carrito en localStorage.", e);
+    }
 }
 
-function addToCart(productId) {
-    const product = PRODUCTS.find(p => p.id === productId);
+function addToCart(productId, size, color) {
+    const product = findProduct(productId);
     if (!product) return;
 
-    const existing = cart.find(item => item.id === productId);
+    const sizeLabel = size || "";
+    const colorLabel = color || "";
+    const existing = cart.find((item) =>
+        item.id === product.id && item.size === sizeLabel && item.color === colorLabel
+    );
+
     if (existing) {
         existing.quantity += 1;
     } else {
-        cart.push({ id: product.id, quantity: 1 });
+        cart.push({ id: product.id, quantity: 1, size: sizeLabel, color: colorLabel });
     }
     saveCart();
     updateCartUI();
     showCartNotification();
+    closeModal();
 }
 
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+function removeFromCart(productId, size, color) {
+    cart = cart.filter((item) => !(item.id === String(productId) && item.size === (size || "") && item.color === (color || "")));
     saveCart();
     updateCartUI();
 }
 
-function updateQuantity(productId, delta) {
-    const item = cart.find(i => i.id === productId);
+function updateQuantity(productId, delta, size, color) {
+    const item = cart.find((entry) =>
+        entry.id === String(productId) && entry.size === (size || "") && entry.color === (color || "")
+    );
     if (!item) return;
 
     item.quantity += delta;
     if (item.quantity <= 0) {
-        removeFromCart(productId);
+        removeFromCart(productId, size, color);
         return;
     }
     saveCart();
@@ -62,7 +126,7 @@ function updateQuantity(productId, delta) {
 
 function getCartTotal() {
     return cart.reduce((total, item) => {
-        const product = PRODUCTS.find(p => p.id === item.id);
+        const product = findProduct(item.id);
         return total + (product ? product.price * item.quantity : 0);
     }, 0);
 }
@@ -80,38 +144,91 @@ function renderCartItems() {
     const cartCount = document.getElementById("cart-count");
 
     if (!cartItems) return;
+    cartItems.innerHTML = "";
 
     if (cart.length === 0) {
-        cartItems.innerHTML = '<p class="cart__empty">Tu carrito está vacío</p>';
+        const empty = document.createElement("p");
+        empty.className = "cart__empty";
+        empty.textContent = "Tu carrito está vacío";
+        cartItems.appendChild(empty);
     } else {
-        cartItems.innerHTML = cart.map(item => {
-            const product = PRODUCTS.find(p => p.id === item.id);
-            if (!product) return "";
-            return `
-                <div class="cart__item">
-                    <img src="${product.image}" alt="${product.name}" class="cart__item-img">
-                    <div class="cart__item-info">
-                        <h4 class="cart__item-name">${product.name}</h4>
-                        <p class="cart__item-price">$${product.price.toLocaleString()}</p>
-                        <div class="cart__item-controls">
-                            <button class="cart__qty-btn" onclick="updateQuantity(${product.id}, -1)">-</button>
-                            <span class="cart__qty">${item.quantity}</span>
-                            <button class="cart__qty-btn" onclick="updateQuantity(${product.id}, 1)">+</button>
-                            <button class="cart__remove" onclick="removeFromCart(${product.id})">Eliminar</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join("");
+        cart.forEach((item, index) => {
+            const product = findProduct(item.id);
+            if (!product) return;
+
+            const row = document.createElement("div");
+            row.className = "cart__item";
+
+            const image = document.createElement("img");
+            image.className = "cart__item-img";
+            image.src = resolveImageSrc(product.image);
+            image.alt = product.name;
+
+            const info = document.createElement("div");
+            info.className = "cart__item-info";
+
+            const name = document.createElement("h4");
+            name.className = "cart__item-name";
+            name.textContent = product.name;
+
+            const price = document.createElement("p");
+            price.className = "cart__item-price";
+            price.textContent = formatMoney(product.price);
+
+            info.appendChild(name);
+            info.appendChild(price);
+
+            const variantText = [item.size, item.color].filter(Boolean).join(" | ");
+            if (variantText) {
+                const variant = document.createElement("p");
+                variant.className = "cart__item-variant";
+                variant.textContent = variantText;
+                info.appendChild(variant);
+            }
+
+            const controls = document.createElement("div");
+            controls.className = "cart__item-controls";
+
+            const makeButton = (action, className, label) => {
+                const button = document.createElement("button");
+                button.className = className;
+                button.type = "button";
+                button.dataset.action = action;
+                button.dataset.index = index;
+                button.textContent = label;
+                return button;
+            };
+
+            const quantity = document.createElement("span");
+            quantity.className = "cart__qty";
+            quantity.textContent = item.quantity;
+
+            controls.appendChild(makeButton("decrease", "cart__qty-btn", "−"));
+            controls.appendChild(quantity);
+            controls.appendChild(makeButton("increase", "cart__qty-btn", "+"));
+            controls.appendChild(makeButton("remove", "cart__remove", "Eliminar"));
+            info.appendChild(controls);
+
+            row.appendChild(image);
+            row.appendChild(info);
+            cartItems.appendChild(row);
+        });
     }
 
-    if (cartTotal) {
-        cartTotal.textContent = "$" + getCartTotal().toLocaleString();
-    }
+    if (cartTotal) cartTotal.textContent = formatMoney(getCartTotal());
+    if (cartCount) cartCount.textContent = getCartCount();
+}
 
-    if (cartCount) {
-        cartCount.textContent = getCartCount();
-    }
+/** Event delegation para los controles del carrito (evita onclick inline). */
+function handleCartItemAction(event) {
+    const button = event.target.closest("[data-action]");
+    if (!button) return;
+    const item = cart[Number(button.dataset.index)];
+    if (!item) return;
+
+    if (button.dataset.action === "increase") updateQuantity(item.id, 1, item.size, item.color);
+    if (button.dataset.action === "decrease") updateQuantity(item.id, -1, item.size, item.color);
+    if (button.dataset.action === "remove") removeFromCart(item.id, item.size, item.color);
 }
 
 function updateCartUI() {
@@ -146,28 +263,35 @@ function showCartNotification() {
 // ==========================================
 // Checkout WhatsApp
 // ==========================================
+/** Arma el mensaje del pedido con el detalle exacto del carrito. */
+function buildOrderMessage() {
+    const lines = ["¡Hola MillaCuatro! Quiero hacer el siguiente pedido:", ""];
+
+    cart.forEach((item, index) => {
+        const product = findProduct(item.id);
+        if (!product) return;
+        const variantParts = [];
+        if (item.size) variantParts.push(`Talle ${item.size}`);
+        if (item.color) variantParts.push(`Color ${item.color}`);
+        const variantText = variantParts.join(" | ");
+        lines.push(`${index + 1}. ${product.name}${variantText ? ` — ${variantText}` : ""}`);
+        lines.push(`   ${formatMoney(product.price)} x ${item.quantity} = ${formatMoney(product.price * item.quantity)}`);
+        lines.push("");
+    });
+
+    lines.push(`Total: ${formatMoney(getCartTotal())}`);
+    const payment = document.querySelector('input[name="payment"]:checked');
+    const paymentText = payment ? (payment.value === "transfer" ? "Transferencia bancaria" : "Mercado Pago") : "A coordinar";
+    lines.push(`Pago: ${paymentText}`);
+    lines.push("Envío a todo el país: a coordinar");
+
+    return lines.join("\n");
+}
+
 function checkoutWhatsApp() {
     if (cart.length === 0) return;
-
-    let message = "Hola! Quiero hacer el siguiente pedido:%0A%0A";
-    cart.forEach(item => {
-        const product = PRODUCTS.find(p => p.id === item.id);
-        if (product) {
-            message += `- ${product.name} x${item.quantity}: $${(product.price * item.quantity).toLocaleString()}%0A`;
-        }
-    });
-    message += `%0A*Total: $${getCartTotal().toLocaleString()}*%0A%0A`;
-    message += "Medio de pago: ";
-
-    const payment = document.querySelector('input[name="payment"]:checked');
-    if (payment) {
-        message += payment.value === "transfer" ? "Transferencia bancaria" : "Mercado Pago";
-    } else {
-        message += "A coordinar";
-    }
-
-    const phone = "5492233396959";
-    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+    const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(STORE_CONFIG.whatsappPhone)}&text=${encodeURIComponent(buildOrderMessage())}`;
+    window.open(url, "_blank", "noopener");
 }
 
 // ==========================================
@@ -309,6 +433,13 @@ function initMobileMenu() {
 // ==========================================
 let currentFilter = "all";
 
+/** Etiqueta visible según la categoría normalizada del catálogo. */
+function categoryLabel(category) {
+    if (category === "bikini") return "Bikini";
+    if (category === "accesorio") return "Accesorio";
+    return "Activewear";
+}
+
 function renderGallery(filter) {
     const grid = document.getElementById("catalog-grid");
     if (!grid) return;
@@ -316,9 +447,17 @@ function renderGallery(filter) {
     currentFilter = filter || "all";
     grid.innerHTML = "";
 
-    const filtered = filter === "all"
-        ? PRODUCTS
-        : PRODUCTS.filter((p) => p.category === filter);
+    const filtered = currentFilter === "all"
+        ? catalog
+        : catalog.filter((product) => product.category === currentFilter);
+
+    if (!filtered.length) {
+        const empty = document.createElement("p");
+        empty.className = "catalog__empty";
+        empty.textContent = "No hay productos en esta categoria por ahora.";
+        grid.appendChild(empty);
+        return;
+    }
 
     filtered.forEach((product, index) => {
         const item = document.createElement("div");
@@ -331,17 +470,22 @@ function renderGallery(filter) {
         imageWrap.className = "catalog__item-image";
 
         const img = document.createElement("img");
-        img.src = product.image;
+        img.src = resolveImageSrc(product.image);
         img.alt = product.name;
         img.loading = "lazy";
+        img.onerror = () => {
+            if (img.dataset.fallback) return;
+            img.dataset.fallback = "true";
+            img.src = "assets/productos/producto-01.jpg";
+        };
 
         const badge = document.createElement("span");
         badge.className = "catalog__item-badge";
-        badge.textContent = product.category === "activewear" ? "Activewear" : product.category === "bikini" ? "Bikini" : "Accesorio";
+        badge.textContent = categoryLabel(product.category);
 
         imageWrap.appendChild(img);
         imageWrap.appendChild(badge);
-        imageWrap.addEventListener("click", () => openLightbox(product.image));
+        imageWrap.addEventListener("click", () => openLightbox(img.src));
 
         // Contenido
         const content = document.createElement("div");
@@ -349,7 +493,7 @@ function renderGallery(filter) {
 
         const category = document.createElement("p");
         category.className = "catalog__item-category";
-        category.textContent = product.category === "activewear" ? "Activewear" : product.category === "bikini" ? "Bikini" : "Accesorio";
+        category.textContent = categoryLabel(product.category);
 
         const title = document.createElement("h3");
         title.className = "catalog__item-title";
@@ -357,12 +501,13 @@ function renderGallery(filter) {
 
         const price = document.createElement("p");
         price.className = "catalog__item-price";
-        price.textContent = "$" + product.price.toLocaleString();
+        price.textContent = formatMoney(product.price);
 
         const addBtn = document.createElement("button");
         addBtn.className = "catalog__add-btn";
+        addBtn.type = "button";
         addBtn.textContent = "Agregar al carrito";
-        addBtn.onclick = () => addToCart(product.id);
+        addBtn.addEventListener("click", () => openModal(product.id));
 
         content.appendChild(category);
         content.appendChild(title);
@@ -371,7 +516,6 @@ function renderGallery(filter) {
 
         item.appendChild(imageWrap);
         item.appendChild(content);
-
         grid.appendChild(item);
     });
 
@@ -446,6 +590,107 @@ function closeLightbox() {
     if (!lightbox) return;
     lightbox.classList.remove("active");
     document.body.style.overflow = "";
+}
+
+// ==========================================
+// Modal producto
+// ==========================================
+/** Muestra u oculta un bloque completo del modal (etiqueta + chips). */
+function setModalFieldVisible(field, visible) {
+    [`${field}-label`, field].forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) element.hidden = !visible;
+    });
+}
+
+function openModal(productId) {
+    const product = findProduct(productId);
+    if (!product) return;
+    currentModalProduct = product;
+    selectedSize = null;
+    selectedColor = null;
+
+    const image = document.getElementById("modal-img");
+    image.src = resolveImageSrc(product.image);
+    image.alt = product.name;
+    image.onerror = () => {
+        if (image.dataset.fallback) return;
+        image.dataset.fallback = "true";
+        image.src = "assets/productos/producto-01.jpg";
+    };
+
+    document.getElementById("modal-category").textContent = categoryLabel(product.category);
+    document.getElementById("modal-title").textContent = product.name;
+    document.getElementById("modal-price").textContent = formatMoney(product.price);
+
+    const description = document.getElementById("modal-description");
+    description.textContent = product.description || "";
+    description.hidden = !product.description;
+
+    const hint = document.getElementById("modal-hint");
+    if (hint) hint.textContent = "";
+
+    const sizesContainer = document.getElementById("modal-sizes");
+    sizesContainer.innerHTML = "";
+    (product.sizes || []).forEach((size) => {
+        const btn = document.createElement("button");
+        btn.className = "modal__chip";
+        btn.type = "button";
+        btn.textContent = size;
+        btn.addEventListener("click", () => selectSize(size, btn));
+        sizesContainer.appendChild(btn);
+    });
+    setModalFieldVisible("modal-sizes", (product.sizes || []).length > 0);
+
+    const colorsContainer = document.getElementById("modal-colors");
+    colorsContainer.innerHTML = "";
+    (product.colors || []).forEach((color) => {
+        const btn = document.createElement("button");
+        btn.className = "modal__chip";
+        btn.type = "button";
+        btn.textContent = color;
+        btn.addEventListener("click", () => selectColor(color, btn));
+        colorsContainer.appendChild(btn);
+    });
+    setModalFieldVisible("modal-colors", (product.colors || []).length > 0);
+
+    document.getElementById("product-modal").classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+    document.getElementById("product-modal").classList.remove("active");
+    document.body.style.overflow = "";
+    currentModalProduct = null;
+    selectedSize = null;
+    selectedColor = null;
+}
+
+function selectSize(size, btn) {
+    selectedSize = size;
+    btn.parentElement.querySelectorAll(".modal__chip").forEach((s) => s.classList.remove("selected"));
+    btn.classList.add("selected");
+    const hint = document.getElementById("modal-hint");
+    if (hint) hint.textContent = "";
+}
+
+function selectColor(color, btn) {
+    selectedColor = color;
+    btn.parentElement.querySelectorAll(".modal__chip").forEach((s) => s.classList.remove("selected"));
+    btn.classList.add("selected");
+}
+
+function confirmAddToCart() {
+    if (!currentModalProduct) return;
+    const hint = document.getElementById("modal-hint");
+
+    if ((currentModalProduct.sizes || []).length && !selectedSize) {
+        if (hint) hint.textContent = "Elegí un talle para continuar.";
+        return;
+    }
+
+    const color = selectedColor || (currentModalProduct.colors || [])[0] || "";
+    addToCart(currentModalProduct.id, selectedSize, color);
 }
 
 // ==========================================
@@ -531,10 +776,11 @@ function renderInstagramFeed() {
 
     grid.innerHTML = "";
 
-    const images = PRODUCTS.slice(0, 6).map(p => p.image.replace("https://d22fxaf9t8d39k.cloudfront.net/", ""));
+    const images = catalog.slice(0, 6).map((product) => resolveImageSrc(product.image));
     const fallbackImages = [
-        "producto-01.jpg", "producto-05.jpg", "producto-10.jpg",
-        "producto-15.jpg", "producto-20.jpg", "producto-25.jpg"
+        "assets/productos/producto-01.jpg", "assets/productos/producto-05.jpg",
+        "assets/productos/producto-10.jpg", "assets/productos/producto-15.jpg",
+        "assets/productos/producto-20.jpg", "assets/productos/producto-25.jpg"
     ];
 
     const displayImages = images.length >= 6 ? images : fallbackImages;
@@ -547,7 +793,7 @@ function renderInstagramFeed() {
         item.rel = "noopener";
 
         const img = document.createElement("img");
-        img.src = `assets/productos/${filename}`;
+        img.src = filename;
         img.alt = "MillaCuatro Instagram";
         img.loading = "lazy";
 
@@ -612,66 +858,126 @@ function initSmoothScroll() {
 // ==========================================
 function injectCartHTML() {
     const header = document.querySelector(".header__inner");
-    if (!header || document.getElementById("cart-btn")) return;
+    let cartBtn = document.getElementById("cart-btn");
 
-    const cartBtn = document.createElement("button");
-    cartBtn.id = "cart-btn";
-    cartBtn.className = "header__cart-btn";
-    cartBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        <span class="header__cart-count" id="cart-count">0</span>
-    `;
-    cartBtn.onclick = toggleCart;
-    header.appendChild(cartBtn);
+    // El botón ya viene en el HTML; solo lo enlazamos una vez.
+    if (!cartBtn && header) {
+        cartBtn = document.createElement("button");
+        cartBtn.id = "cart-btn";
+        cartBtn.className = "header__cart-btn";
+        cartBtn.setAttribute("aria-label", "Carrito");
+        cartBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="header__cart-count" id="cart-count">0</span>
+        `;
+        header.appendChild(cartBtn);
+    }
+    if (cartBtn && !cartBtn.dataset.bound) {
+        cartBtn.addEventListener("click", toggleCart);
+        cartBtn.dataset.bound = "true";
+    }
 
-    const cartSidebar = document.createElement("div");
-    cartSidebar.id = "cart-sidebar";
-    cartSidebar.className = "cart";
-    cartSidebar.innerHTML = `
-        <div class="cart__header">
-            <h3 class="cart__title">Tu Carrito</h3>
-            <button class="cart__close" onclick="closeCart()">&times;</button>
-        </div>
-        <div class="cart__items" id="cart-items"></div>
-        <div class="cart__footer">
-            <div class="cart__total">
-                <span>Total:</span>
-                <span id="cart-total">$0</span>
+    // Panel lateral y overlay: se crean solo si no existen.
+    if (!document.getElementById("cart-sidebar")) {
+        const cartSidebar = document.createElement("div");
+        cartSidebar.id = "cart-sidebar";
+        cartSidebar.className = "cart";
+        cartSidebar.innerHTML = `
+            <div class="cart__header">
+                <h3 class="cart__title">Tu Carrito</h3>
+                <button class="cart__close" id="cart-close" type="button" aria-label="Cerrar carrito">&times;</button>
             </div>
-            <div class="cart__payment">
-                <label class="cart__payment-label">
-                    <input type="radio" name="payment" value="transfer" checked> Transferencia
-                </label>
-                <label class="cart__payment-label">
-                    <input type="radio" name="payment" value="mp"> Mercado Pago
-                </label>
+            <div class="cart__items" id="cart-items"></div>
+            <div class="cart__footer">
+                <div class="cart__total">
+                    <span>Total:</span>
+                    <span id="cart-total">$0</span>
+                </div>
+                <div class="cart__payment">
+                    <label class="cart__payment-label">
+                        <input type="radio" name="payment" value="transfer" checked> Transferencia
+                    </label>
+                    <label class="cart__payment-label">
+                        <input type="radio" name="payment" value="mp"> Mercado Pago
+                    </label>
+                </div>
+                <button class="btn btn--primary btn--full" id="cart-checkout" type="button">Enviar pedido por WhatsApp</button>
             </div>
-            <button class="btn btn--primary btn--full" onclick="checkoutWhatsApp()">Confirmar pedido por WhatsApp</button>
-        </div>
-    `;
-    document.body.appendChild(cartSidebar);
+        `;
+        document.body.appendChild(cartSidebar);
+    }
 
-    const cartOverlay = document.createElement("div");
-    cartOverlay.id = "cart-overlay";
-    cartOverlay.className = "cart__overlay";
-    cartOverlay.onclick = closeCart;
-    document.body.appendChild(cartOverlay);
+    if (!document.getElementById("cart-overlay")) {
+        const cartOverlay = document.createElement("div");
+        cartOverlay.id = "cart-overlay";
+        cartOverlay.className = "cart__overlay";
+        document.body.appendChild(cartOverlay);
+    }
+
+    // Eventos delegados / enlazados una sola vez.
+    const cartItems = document.getElementById("cart-items");
+    if (cartItems && !cartItems.dataset.bound) {
+        cartItems.addEventListener("click", handleCartItemAction);
+        cartItems.dataset.bound = "true";
+    }
+
+    const closeBtn = document.getElementById("cart-close");
+    if (closeBtn && !closeBtn.dataset.bound) {
+        closeBtn.addEventListener("click", closeCart);
+        closeBtn.dataset.bound = "true";
+    }
+
+    const checkoutBtn = document.getElementById("cart-checkout");
+    if (checkoutBtn && !checkoutBtn.dataset.bound) {
+        checkoutBtn.addEventListener("click", checkoutWhatsApp);
+        checkoutBtn.dataset.bound = "true";
+    }
+
+    const overlay = document.getElementById("cart-overlay");
+    if (overlay && !overlay.dataset.bound) {
+        overlay.addEventListener("click", closeCart);
+        overlay.dataset.bound = "true";
+    }
+}
+
+// ==========================================
+// Modal events
+// ==========================================
+function initModalEvents() {
+    const closeBtn = document.getElementById("modal-close");
+    const overlay = document.getElementById("modal-overlay");
+    const addBtn = document.getElementById("modal-add-btn");
+
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    if (overlay) overlay.addEventListener("click", closeModal);
+    if (addBtn) addBtn.addEventListener("click", confirmAddToCart);
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        const productModal = document.getElementById("product-modal");
+        if (productModal && productModal.classList.contains("active")) {
+            closeModal();
+        } else {
+            closeCart();
+        }
+    });
 }
 
 // ==========================================
 // Init
 // ==========================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     loadCart();
     injectCartHTML();
     updateCartUI();
+
+    // El resto de la interfaz se inicializa mientras llega el catálogo.
     initPreloader();
     createLightbox();
-    renderGallery("all");
     initGalleryFilters();
     initScrollReveal();
     initHeader();
@@ -680,5 +986,24 @@ document.addEventListener("DOMContentLoaded", () => {
     initCursor();
     initTestimonialsSlider();
     initNewsletter();
+    initModalEvents();
+
+    const grid = document.getElementById("catalog-grid");
+    if (grid) {
+        const loading = document.createElement("p");
+        loading.className = "catalog__loading";
+        loading.textContent = "Cargando coleccion…";
+        grid.appendChild(loading);
+    }
+
+    const { products, source } = await fetchCatalog();
+    catalog = products;
+    catalogSource = source;
+    console.info(`[MillaCuatro] Catálogo cargado desde ${source} (${catalog.length} productos).`);
+
+    normalizeCart(); // descarta productos que ya no están en la fuente actual
+    saveCart();
+    renderGallery(currentFilter);
     renderInstagramFeed();
+    updateCartUI();
 });

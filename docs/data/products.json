@@ -1,0 +1,282 @@
+[
+  {
+    "id": 1,
+    "name": "Bikini rio",
+    "price": 43000,
+    "description": "Bikini de dos piezas de corte clásico y ajuste cómodo. Ideal para la playa, la pileta y todos los días de verano.",
+    "category": "bikini",
+    "image": "assets/productos/producto-01.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 2,
+    "name": "Catsuit alo",
+    "price": 43500,
+    "description": "Catsuit enterizo de segunda piel, diseñado para acompañar cada movimiento con total libertad y comodidad.",
+    "category": "activewear",
+    "image": "assets/productos/producto-02.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Violeta"]
+  },
+  {
+    "id": 3,
+    "name": "Short washed",
+    "price": 26500,
+    "description": "Short de entrenamiento con lavado suave y terminación premium. Liviano, fresco y de look minimalista.",
+    "category": "activewear",
+    "image": "assets/productos/producto-03.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 4,
+    "name": "Calza war",
+    "price": 18000,
+    "description": "Calza de compresión ligera, suave y versátil. Un básico para entrenar o para el día a día.",
+    "category": "activewear",
+    "image": "assets/productos/producto-04.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Violeta"]
+  },
+  {
+    "id": 5,
+    "name": "Set north",
+    "price": 30000,
+    "description": "Conjunto de calza y top pensado para entrenar y descansar con el mismo estilo. Tejido suave y ajuste cómodo.",
+    "category": "activewear",
+    "image": "assets/productos/producto-05.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 6,
+    "name": "CALZA BATIK",
+    "price": 22300,
+    "description": "Calza con estampado batik exclusivo, suave al tacto y de secado rápido. Para entrenar con personalidad.",
+    "category": "activewear",
+    "image": "assets/productos/producto-06.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 7,
+    "name": "CALZA OXFORD",
+    "price": 26000,
+    "description": "Calza clásica de tiro alto y tejido firme. Un básico que siempre funciona, dentro y fuera del gimnasio.",
+    "category": "activewear",
+    "image": "assets/productos/producto-07.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 8,
+    "name": "Calza otawa",
+    "price": 26000,
+    "description": "Calza de tiro alto con soporte medio, ideal para entrenamientos largos y para estar cómoda todo el día.",
+    "category": "activewear",
+    "image": "assets/productos/producto-08.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Violeta"]
+  },
+  {
+    "id": 9,
+    "name": "Camiseta Nevada",
+    "price": 25500,
+    "description": "Camiseta liviana de manga corta, fresca y cómoda. Un esencial de guardarropa para cualquier momento.",
+    "category": "activewear",
+    "image": "assets/productos/producto-09.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 10,
+    "name": "Buzo aspen",
+    "price": 36000,
+    "description": "Buzo de algodón suave con corte relajado. Perfecto para después del entrenamiento o para salir a caminar.",
+    "category": "activewear",
+    "image": "assets/productos/producto-10.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Violeta"]
+  },
+  {
+    "id": 11,
+    "name": "Calza munich",
+    "price": 26000,
+    "description": "Calza de tiro alto de diseño minimalista y ajuste que acompaña el movimiento sin marcar.",
+    "category": "activewear",
+    "image": "assets/productos/producto-11.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 12,
+    "name": "Top ica",
+    "price": 10000,
+    "description": "Top deportivo de soporte medio, fresco y cómodo. Ideal para entrenar, caminar o descansar.",
+    "category": "activewear",
+    "image": "assets/productos/producto-12.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 13,
+    "name": "Millacuatro",
+    "price": 12000,
+    "description": "Bikini insignia de la marca: líneas puras, tonos combinables y un ajuste que favorece.",
+    "category": "bikini",
+    "image": "assets/productos/producto-13.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 14,
+    "name": "Cali print",
+    "price": 18000,
+    "description": "Bikini con estampado exclusivo, alegre y fresco. Para llevar el verano por dentro.",
+    "category": "bikini",
+    "image": "assets/productos/producto-14.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Print"]
+  },
+  {
+    "id": 15,
+    "name": "MIAMI",
+    "price": 36000,
+    "description": "Set de verano de dos piezas con diseño moderno, caída suave y una comodidad que invita a quedarse.",
+    "category": "bikini",
+    "image": "assets/productos/producto-15.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 16,
+    "name": "Bikini Cali",
+    "price": 12000,
+    "description": "Bikini clásico de tirantes, simple y favorecedor. Un imprescindible del guardarropa de verano.",
+    "category": "bikini",
+    "image": "assets/productos/producto-16.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 17,
+    "name": "Fiji",
+    "price": 18000,
+    "description": "Bikini con print tropical y corte moderno, pensado para destacar en la playa con naturalidad.",
+    "category": "bikini",
+    "image": "assets/productos/producto-17.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Print"]
+  },
+  {
+    "id": 18,
+    "name": "Top Killa",
+    "price": 20000,
+    "description": "Top de entrenamiento con soporte firme, terminación suave y diseño que no se mueve contigo.",
+    "category": "activewear",
+    "image": "assets/productos/producto-18.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Gris", "Violeta"]
+  },
+  {
+    "id": 19,
+    "name": "Laos",
+    "price": 12000,
+    "description": "Bikini de dos piezas de corte minimalista y tonos versátiles para combinar sin pensar.",
+    "category": "bikini",
+    "image": "assets/productos/producto-19.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 20,
+    "name": "TOP WINTER",
+    "price": 24000,
+    "description": "Top térmico de manga larga, ideal para entrenar en los días fríos sin perder estilo ni comodidad.",
+    "category": "activewear",
+    "image": "assets/productos/producto-20.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 21,
+    "name": "Short strong",
+    "price": 15000,
+    "description": "Short de alta resistencia, diseñado para entrenamientos intensos y movimientos sin límites.",
+    "category": "activewear",
+    "image": "assets/productos/producto-21.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 22,
+    "name": "LOVE",
+    "price": 25000,
+    "description": "Bikini de líneas suaves y colores que combinan con todo. Fresco, cómodo y muy femenino.",
+    "category": "bikini",
+    "image": "assets/productos/producto-22.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 23,
+    "name": "Mir",
+    "price": 12000,
+    "description": "Bikini con detalles print y ajuste cómodo para todo el día. Para playa, pileta y después.",
+    "category": "bikini",
+    "image": "assets/productos/producto-23.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Print"]
+  },
+  {
+    "id": 24,
+    "name": "Short Malibu",
+    "price": 20000,
+    "description": "Short liviano y fresco, perfecto para entrenar, descansar o disfrutar el verano.",
+    "category": "activewear",
+    "image": "assets/productos/producto-24.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Azul"]
+  },
+  {
+    "id": 25,
+    "name": "Bikini Barbie",
+    "price": 25000,
+    "description": "Bikini de tonos vibrantes y corte favorecedor. Para brillar en verano con actitud.",
+    "category": "bikini",
+    "image": "assets/productos/producto-25.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  },
+  {
+    "id": 26,
+    "name": "Ocean",
+    "price": 12000,
+    "description": "Bikini inspirado en el mar: líneas simples, frescura natural y una combinación de colores única.",
+    "category": "bikini",
+    "image": "assets/productos/producto-26.jpg",
+    "sizes": ["S", "M", "L"],
+    "colors": ["Negro", "Celeste", "Print"]
+  },
+  {
+    "id": 27,
+    "name": "CATSUIT WEST CORTO",
+    "price": 32000,
+    "description": "Catsuit de manga larga y corte corto: moderno, funcional y cómodo para entrenar con estilo.",
+    "category": "activewear",
+    "image": "assets/productos/producto-27.jpg",
+    "sizes": ["S", "M", "L", "XL"],
+    "colors": ["Negro", "Gris", "Violeta"]
+  },
+  {
+    "id": 28,
+    "name": "TOTE BAG",
+    "price": 23200,
+    "description": "Bolsa tote reutilizable, liviana y resistente. Para llevar todo con estilo, todos los días.",
+    "category": "accesorio",
+    "image": "assets/productos/producto-28.jpg",
+    "sizes": [],
+    "colors": ["Negro", "Rosa", "Celeste"]
+  }
+]

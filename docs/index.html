@@ -413,8 +413,36 @@
         </svg>
     </a>
 
+    <script src="js/config.js"></script>
     <script src="js/products.js"></script>
+    <script src="js/catalog.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- Modal producto -->
+    <div class="modal" id="product-modal">
+        <div class="modal__overlay" id="modal-overlay"></div>
+        <div class="modal__content">
+            <button class="modal__close" id="modal-close">&times;</button>
+            <div class="modal__grid">
+                <img src="" alt="" class="modal__img" id="modal-img">
+                <div class="modal__info">
+                    <p class="modal__category" id="modal-category"></p>
+                    <h3 class="modal__title" id="modal-title"></h3>
+                    <p class="modal__price" id="modal-price"></p>
+                    <p class="modal__description" id="modal-description"></p>
+                    <div class="modal__options">
+                        <label class="modal__label" id="modal-sizes-label">Talle</label>
+                        <div class="modal__sizes" id="modal-sizes"></div>
+                        <label class="modal__label" id="modal-colors-label">Color</label>
+                        <div class="modal__colors" id="modal-colors"></div>
+                    </div>
+                    <p class="modal__hint" id="modal-hint" role="status" aria-live="polite"></p>
+                    <button class="btn btn--primary btn--full modal__add" id="modal-add-btn">Agregar al carrito</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
