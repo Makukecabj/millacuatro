@@ -410,3 +410,97 @@ body.admin select {
         width: 100%;
     }
 }
+
+/* ========================================
+   Contraste y legibilidad del panel
+   ========================================
+   La tienda define .btn--outline con texto/borde BLANCO para usarlo sobre
+   fotos oscuras. Acá el fondo es blanco, así que ese mismo estilo deja el
+   botón "Editar" (y Cancelar/Agregar) invisible. Además, --accent (#C4704B)
+   tiene solo ~3.4:1 sobre blanco: insuficiente para texto pequeño.
+   Estos overrides son exclusivos de /admin y no afectan la tienda pública.
+   ======================================== */
+body.admin {
+    --admin-accent: #8A3E1F;          /* ~7.5:1 sobre blanco */
+    --admin-accent-hover: #6E3017;
+    --admin-text: #1A1714;            /* ~15:1 sobre blanco */
+    --admin-text-secondary: #4A423C;  /* ~9.8:1 sobre blanco */
+}
+
+/* Logo, tags ("ADMINISTRACIÓN"), mensajes y code: antes en naranja claro. */
+body.admin .header__logo,
+body.admin .section-header__tag,
+body.admin .admin__message,
+body.admin .admin__notice code,
+body.admin .admin__close:hover,
+body.admin .admin__chip:hover {
+    color: var(--admin-accent);
+}
+
+body.admin .admin__link {
+    color: var(--admin-text-secondary);
+}
+
+body.admin .admin__link:hover {
+    color: var(--admin-accent);
+}
+
+/* Subtítulos y etiquetas de talles/colores. */
+body.admin .admin__subtitle,
+body.admin .admin__row-meta,
+body.admin .admin__field,
+body.admin .admin__empty {
+    color: var(--admin-text-secondary);
+}
+
+body.admin .admin__row-name {
+    color: var(--admin-text);
+}
+
+body.admin .admin__row-price {
+    color: var(--admin-accent);
+}
+
+/* Botón EDITAR + demás botones outline: texto y borde oscuros sobre blanco. */
+body.admin .btn--edit,
+body.admin .btn--outline {
+    background: #FFFFFF;
+    color: var(--admin-accent);
+    border: 2px solid var(--admin-accent);
+}
+
+body.admin .btn--edit {
+    padding: 0.75rem 1.25rem; /* pareado con .btn--danger de "Eliminar" */
+}
+
+body.admin .btn--edit:hover,
+body.admin .btn--outline:hover {
+    background: var(--admin-accent);
+    color: #FFFFFF;
+    border-color: var(--admin-accent);
+    transform: translateY(-1px);
+}
+
+/* Botón principal ("+ CREAR NUEVO PRODUCTO", Ingresar, Guardar cambios). */
+body.admin .btn--primary {
+    background-color: var(--admin-accent);
+    border-color: var(--admin-accent);
+    color: #FFFFFF;
+}
+
+body.admin .btn--primary:hover {
+    background-color: var(--admin-accent-hover);
+    border-color: var(--admin-accent-hover);
+}
+
+body.admin .admin__chip.selected {
+    background: var(--admin-accent);
+    border-color: var(--admin-accent);
+    color: #FFFFFF;
+}
+
+body.admin .admin__field input:focus,
+body.admin .admin__field textarea:focus,
+body.admin .admin__field select:focus {
+    border-color: var(--admin-accent);
+}

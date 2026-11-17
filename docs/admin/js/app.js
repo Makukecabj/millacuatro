@@ -191,8 +191,9 @@ function renderProducts(products) {
 
         const edit = document.createElement("button");
         edit.type = "button";
-        edit.className = "btn btn--outline btn--small";
+        edit.className = "btn btn--edit btn--small";
         edit.textContent = "Editar";
+        edit.title = "Editar producto";
         edit.dataset.action = "edit";
         edit.dataset.id = product.id;
 
