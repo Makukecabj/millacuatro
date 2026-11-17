@@ -32,7 +32,7 @@ values
   ('25', 'Bikini Barbie', 25000, 'Bikini de tonos vibrantes y corte favorecedor. Para brillar en verano con actitud.', 'bikini', 'assets/productos/producto-25.jpg', ARRAY['S', 'M', 'L'], ARRAY['Negro', 'Rosa', 'Celeste']),
   ('26', 'Ocean', 12000, 'Bikini inspirado en el mar: líneas simples, frescura natural y una combinación de colores única.', 'bikini', 'assets/productos/producto-26.jpg', ARRAY['S', 'M', 'L'], ARRAY['Negro', 'Celeste', 'Print']),
   ('27', 'CATSUIT WEST CORTO', 32000, 'Catsuit de manga larga y corte corto: moderno, funcional y cómodo para entrenar con estilo.', 'activewear', 'assets/productos/producto-27.jpg', ARRAY['S', 'M', 'L', 'XL'], ARRAY['Negro', 'Gris', 'Violeta']),
-  ('28', 'TOTE BAG', 23200, 'Bolsa tote reutilizable, liviana y resistente. Para llevar todo con estilo, todos los días.', 'accesorio', 'assets/productos/producto-28.jpg', ARRAY[], ARRAY['Negro', 'Rosa', 'Celeste'])
+  ('28', 'TOTE BAG', 23200, 'Bolsa tote reutilizable, liviana y resistente. Para llevar todo con estilo, todos los días.', 'accesorio', 'assets/productos/producto-28.jpg', ARRAY[]::text[], ARRAY['Negro', 'Rosa', 'Celeste'])
 on conflict (id) do update set
   name = excluded.name,
   price = excluded.price,
