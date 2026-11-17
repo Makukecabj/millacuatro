@@ -295,6 +295,19 @@ function closeProductModal() {
     objectUrls = [];
 }
 
+/** Borra la foto anterior del Storage sin afectar el resultado del CRUD. */
+async function removeOldPhoto(product) {
+    if (!product) return;
+    const oldPath = storagePathFromUrl(product.image);
+    if (!oldPath) return;
+    try {
+        const { error } = await supabase.storage.from(config.supabase.storageBucket).remove([oldPath]);
+        if (error) console.warn("[MillaCuatro Admin] No se pudo borrar la foto anterior:", error.message);
+    } catch (error) {
+        console.warn("[MillaCuatro Admin] No se pudo borrar la foto anterior:", error);
+    }
+}
+
 async function uploadImage(file) {
     const extension = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
     const path = `${newId()}.${extension}`;
@@ -350,11 +363,8 @@ async function saveProduct(event) {
 
         if (result.error) throw result.error;
 
-        // Si se reemplazó la foto y la vieja estaba en nuestro Storage, la borramos.
-        if (currentProduct && file) {
-            const oldPath = storagePathFromUrl(currentProduct.image);
-            if (oldPath) await supabase.storage.from(config.supabase.storageBucket).remove([oldPath]);
-        }
+        // Si se reemplazó la foto, limpiamos la vieja (best-effort: el UPDATE ya terminó).
+        if (currentProduct && file) await removeOldPhoto(currentProduct);
 
         closeProductModal();
         setMessage("Producto guardado. La tienda ya se actualizó.");
@@ -426,10 +436,7 @@ function bindDeleteEvents() {
             return;
         }
 
-        if (product) {
-            const oldPath = storagePathFromUrl(product.image);
-            if (oldPath) await supabase.storage.from(config.supabase.storageBucket).remove([oldPath]);
-        }
+        await removeOldPhoto(product);
 
         $("confirm-modal").hidden = true;
         pendingDeleteId = null;
